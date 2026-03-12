@@ -22,7 +22,7 @@ Check the current weather on any city on the planet. Switch between metric and i
 
 1. `git clone git@github.com:Tcabon/weather-app-open-meteo.git`
 
-2. `cd weather-app`
+2. `cd weather-app-open-meteo`
 
 3. `npm install`
 
