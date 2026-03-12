@@ -26,7 +26,7 @@ Check the current weather on any city on the planet. Switch between metric and i
 
 3. `npm install`
 
-4. `Open city.json in the config folder and enter location informations (you can find the informations at the start of https://open-meteo.com/en/docs)`
+4. `Open city.json in the config folder and enter location informations (you can find the informations of the city you are looking for at the start of https://open-meteo.com/en/docs)`
 
 5. `npm run dev`
 
