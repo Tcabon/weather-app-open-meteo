@@ -1,12 +1,11 @@
 import {
   unixToLocalTime,
   kmToMiles,
-  mpsToMph,
   timeTo12HourFormat,
 } from "./converters";
 
-export const getWindSpeed = (unitSystem, windInMps) =>
-  unitSystem == "metric" ? windInMps : mpsToMph(windInMps);
+export const getWindSpeed = (unitSystem, windInKmh) =>
+  unitSystem == "metric" ? windInKmh : kmToMiles(windInKmh);
 
 export const getVisibility = (unitSystem, visibilityInMeters) =>
   unitSystem == "metric"

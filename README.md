@@ -6,7 +6,7 @@ Check the current weather on any city on the planet. Switch between metric and i
 
 ## Features
 
-1. User's ability to search cities
+1. User's ability to display location weather
 
 2. Current local time and date
 
@@ -22,26 +22,13 @@ Check the current weather on any city on the planet. Switch between metric and i
 
 ## Installation
 
-1. `git clone https://github.com/madzadev/weather-app.git`
+1. `git clone https://github.com/Tcabon/weather-app-open-meteo.git`
 
 2. `cd weather-app`
 
 3. `npm install`
 
-4. Log-in to [Openweathermap.com](https://openweathermap.org/)
+4. `Open city.json in the config folder and enter location informations (you can find the informations at the start of https://open-meteo.com/en/docs)`
 
-5. Create an API key
+5. `npm run dev`
 
-6. `cp .env.example .env.local`
-
-7. Paste API key for `OPENWEATHER_API_KEY`
-
-8. `npm run dev`
-
-## Contributions
-
-Any feature requests and pull requests are welcome!
-
-## License
-
-The project is under [MIT license](https://choosealicense.com/licenses/mit/).
