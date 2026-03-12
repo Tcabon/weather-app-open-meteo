@@ -1,8 +1,8 @@
 import city from "../../config/city.json";
 
 const WEATHER_CODE_MAP = {
-  0: { description: "clear sky", icon: "01d" },
-  1: { description: "mainly clear", icon: "02d" },
+  0: { description: "clear sky", icons: { day: "01d", night: "01n" } },
+  1: { description: "mainly clear", icons: { day: "02d", night: "02n" } },
   2: { description: "partly cloudy", icon: "03d" },
   3: { description: "overcast", icon: "04d" },
   45: { description: "fog", icon: "50d" },
@@ -18,6 +18,13 @@ const WEATHER_CODE_MAP = {
   75: { description: "heavy snow fall", icon: "13d" },
   95: { description: "thunderstorm", icon: "11d" },
 };
+
+function pickIcon(info, isDay) {
+  if (info.icons) {
+    return isDay === 1 ? info.icons.day : info.icons.night;
+  }
+  return info.icon;
+}
 
 function findCurrentIndex(currentTime, hourlyTimes) {
   if (!currentTime || !hourlyTimes || hourlyTimes.length === 0) return 0;
@@ -46,7 +53,7 @@ export default async function handler(req, res) {
       daily: "sunrise,sunset",
       hourly: "visibility",
       current:
-        "temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m",
+        "temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,is_day",
       timezone: timezone,
       timeformat: "unixtime",
     });
@@ -69,12 +76,14 @@ export default async function handler(req, res) {
         ? hourly.visibility[idx]
         : 10000;
 
-    const weatherCode = current?.weather_code ?? 0;
+    const weatherCode = current?.weather_code;
 
     const codeInfo = WEATHER_CODE_MAP[weatherCode] || {
       description: "unknown",
       icon: "01d",
     };
+
+    const icon = pickIcon(codeInfo, current.is_day);
 
     const mapped = {
       name,
@@ -93,7 +102,7 @@ export default async function handler(req, res) {
       weather: [
         {
           description: codeInfo.description,
-          icon: codeInfo.icon,
+          icon: icon,
         },
       ],
       wind: {
