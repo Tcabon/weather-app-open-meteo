@@ -19,21 +19,15 @@ const WEATHER_CODE_MAP = {
   95: { description: "thunderstorm", icon: "11d" },
 };
 
-function toUnixSeconds(dateString) {
-  return Math.floor(new Date(dateString).getTime() / 1000);
-}
-
 function findCurrentIndex(currentTime, hourlyTimes) {
   if (!currentTime || !hourlyTimes || hourlyTimes.length === 0) return 0;
-
-  const currentMs = new Date(currentTime).getTime();
 
   let idx = 0;
   let bestDiff = Infinity;
 
   for (let i = 0; i < hourlyTimes.length; i++) {
-    const tMs = new Date(hourlyTimes[i]).getTime();
-    const diff = Math.abs(tMs - currentMs);
+    const t = hourlyTimes[i];
+    const diff = Math.abs(t - currentTime);
     if (diff < bestDiff) {
       bestDiff = diff;
       idx = i;
@@ -51,10 +45,12 @@ export default async function handler(req, res) {
       longitude: longitude,
       daily: "sunrise,sunset",
       hourly: "visibility",
-      current: "temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m",
+      current:
+        "temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m",
       timezone: timezone,
+      timeformat: "unixtime",
     });
-    const url = `https://api.open-meteo.com/v1/forecast?${params}`
+    const url = `https://api.open-meteo.com/v1/forecast?${params}`;
 
     const response = await fetch(url);
     const data = await response.json();
@@ -64,6 +60,7 @@ export default async function handler(req, res) {
         .status(500)
         .json({ message: "Weather data not available from Open-Meteo" });
     }
+
     const { hourly, daily, current, utc_offset_seconds } = data;
     const idx = findCurrentIndex(current.time, hourly.time);
 
@@ -79,17 +76,15 @@ export default async function handler(req, res) {
       icon: "01d",
     };
 
-    const currentTimeIso = current?.time ?? new Date().getTime();
-
     const mapped = {
       name,
       sys: {
         country,
-        sunrise: daily.sunrise ? toUnixSeconds(daily.sunrise[0]) : 0,
-        sunset: daily.sunset ? toUnixSeconds(daily.sunset[0]) : 0,
+        sunrise: daily.sunrise ? daily.sunrise[0] : 0,
+        sunset: daily.sunset ? daily.sunset[0] : 0,
       },
       timezone: utc_offset_seconds || 0,
-      dt: toUnixSeconds(currentTimeIso),
+      dt: current.time,
       main: {
         temp: current.temperature_2m,
         feels_like: current.apparent_temperature,
@@ -111,6 +106,8 @@ export default async function handler(req, res) {
     res.status(200).json(mapped);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error fetching weather data from Open-Meteo" });
+    res
+      .status(500)
+      .json({ message: "Error fetching weather data from Open-Meteo" });
   }
 }
